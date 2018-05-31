@@ -1,0 +1,33 @@
+{% extends "blog/base.html" %}
+
+<!-- Main Content -->
+{%block main%}
+    <div class="post-preview">
+        {% if article_list %}
+            {% with post_list=article_list %}
+                {% for post in post_list %}
+                    {% url 'article-detail-view' post.article_id as article_url %}
+                    <h2 class="post-title">
+                        <a href="{{article_url}}">{{post.title}}</a>
+                    </h2>
+                    <h3 class="post-subtitle">
+                        {% autoescape off%}
+                            {{post.summary|slice:"50" }}
+                        {% endautoescape %}
+                        {% if post.summary|length > 50 %}
+                            ...
+                        {% endif %}
+                    </h3>
+                    <p class="post-meta">Posted by
+                        <a href="#">{{post.author}}</a>
+                        on {{post.pub_time|date:"Y-m-d" }}
+                        <span>
+                            <span class="glyphicon glyphicon-eye-open"></span>
+                            {{post.view_times}}
+                        </span>
+                    </p>
+                {% endfor %}
+            {% endwith %}
+        {% endif %}
+    </div>
+{% endblock %}
