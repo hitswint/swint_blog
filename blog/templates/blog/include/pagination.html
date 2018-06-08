@@ -1,23 +1,11 @@
-<ul class="pager">
+<div class="clearfix">
     {% if  page_obj.has_previous %}
-        <li class="previous">
-            <a href="?page={{page_obj.previous_page_number}}">&larr; 上一页</a>
-        </li>
-    {% else %}
-        <li class="previous disabled">
-            <a>&larr; 上一页</a>
-        </li>
+        <a class="btn btn-primary float-left" href="?page={{page_obj.previous_page_number}}">&larr; Newer Posts({{page_obj.number | add:"-1"}}/{{paginator.num_pages}})</a>
+        {#% else %#}
+        <!-- <a class="btn btn-primary float-left disabled">Newer Posts &rarr;</a> -->
     {% endif %}
 
-    <li class="page-number">{{page_obj.number}}/{{paginator.num_pages}}</li>
-
-    {% if  page_obj.has_next%}
-        <li class="next">
-            <a href="?page={{page_obj.next_page_number}}">下一页 &rarr;</a>
-        </li>
-    {% else %}
-        <li class="next disabled">
-            <a>下一页 &rarr;</a>
-        </li>
+    {% if  page_obj.has_next %}
+        <a class="btn btn-primary float-right" href="?page={{page_obj.next_page_number}}">Older Posts({{page_obj.number | add:"1"}}/{{paginator.num_pages}}) &rarr;</a>
     {% endif %}
-</ul>
+</div>

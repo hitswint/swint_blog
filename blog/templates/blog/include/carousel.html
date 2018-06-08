@@ -6,36 +6,36 @@
             {% else %}
                 <li data-target="#myCarousel" data-slide-to="{{forloop.counter0}}"></li>
             {% endif%}
-            
+
         {% endfor %}
-    </ol>   
+    </ol>
     <!-- 轮播（Carousel）项目 -->
     <div class="carousel-inner">
         {% for carousel_page in carousel_page_list %}
             {% if forloop.first%}
-            <div class="item active">
-                <a href="{% url 'article-detail-view' carousel_page.article.en_title %}">
-                    <img src="{{carousel_page.img}}" alt="{{carousel_page.title}}">
-                    <div class="carousel-caption">
-                        <h4>{{carousel_page.title}}</h4>
-                        {% autoescape off%}
-                        {{carousel_page.summary}}
-                        {% endautoescape %}
-                    </div>
-                </a>
-            </div>
+                <div class="item active">
+                    <a href="{% url 'article-detail-view' carousel_page.article.id %}">
+                        <img src="{{carousel_page.img}}" alt="{{carousel_page.title}}">
+                        <div class="carousel-caption">
+                            <h4>{{carousel_page.title}}</h4>
+                            {% autoescape off%}
+                                {{carousel_page.summary}}
+                            {% endautoescape %}
+                        </div>
+                    </a>
+                </div>
             {% else %}
-            <div class="item">
-                <a href="{% url 'article-detail-view' carousel_page.article.en_title %}">
-                    <img src="{{carousel_page.img}}" alt="{{carousel_page.title}}">
-                    <div class="carousel-caption">
-                        <h4>{{carousel_page.title}}</h4>
-                        {% autoescape off%}
-                        {{carousel_page.summary}}
-                        {% endautoescape %}
-                    </div>
-                </a>
-            </div>
+                <div class="item">
+                    <a href="{% url 'article-detail-view' carousel_page.article.id %}">
+                        <img src="{{carousel_page.img}}" alt="{{carousel_page.title}}">
+                        <div class="carousel-caption">
+                            <h4>{{carousel_page.title}}</h4>
+                            {% autoescape off%}
+                                {{carousel_page.summary}}
+                            {% endautoescape %}
+                        </div>
+                    </a>
+                </div>
             {% endif%}
         {% endfor %}
     </div>
@@ -48,4 +48,4 @@
         <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
         <span class="sr-only">Next</span>
     </a>
-</div> 
+</div>

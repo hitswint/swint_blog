@@ -16,6 +16,7 @@ import os
 from django.core.urlresolvers import reverse_lazy
 
 LOGIN_REDIRECT_URL = reverse_lazy('index-view')
+# LOGOUT_REDIRECT_URL = reverse_lazy('index-view')
 LOGIN_URL = reverse_lazy('login')
 LOGOUT_URL = reverse_lazy('logout')
 
@@ -34,7 +35,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost ',
     '67.209.178.147',
-    '192.168.1.102',
+    '.guiq.wang',
 ]
 
 # Application definition
@@ -43,7 +44,7 @@ INSTALLED_APPS = ('django.contrib.admin', 'django.contrib.auth',
                   'django.contrib.contenttypes', 'django.contrib.sessions',
                   'django.contrib.messages', 'django.contrib.staticfiles',
                   'django.contrib.sitemaps', 'django.contrib.sites', 'blog',
-                  'swint_comments', 'swint_system', 'gunicorn', )
+                  'swint_comments', 'swint_system', 'gunicorn', 'bootstrap3', )
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -185,8 +186,9 @@ CACHES = {
 }
 
 # 分页配置
-PAGE_NUM = 2
+PAGE_NUM = 5
 
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # email配置
 # 如果想要支持ssl (比如qq邮箱) 见 https://github.com/bancek/django-smtp-ssl
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -195,18 +197,9 @@ PAGE_NUM = 2
 # EMAIL_HOST_USER = ''                  # 我自己的邮箱 例如: xxxxxx@163.com
 # EMAIL_HOST_PASSWORD = ''              # 我的邮箱密码 例如  xxxxxxxxx
 # EMAIL_SUBJECT_PREFIX = u'vmaig'       # 为邮件Subject-line前缀,默认是'[django]'
-EMAIL_USE_TLS = True  # 与SMTP服务器通信时，是否启动TLS链接(安全链接)。默认是false
-
-# SMTP地址
-EMAIL_HOST = 'smtp-mail.outlook.com'
-# SMTP端口
-EMAIL_PORT = 587
-# 邮箱地址
-EMAIL_HOST_USER = 'wguiqiang@hotmail.com'
-# 密码
-EMAIL_HOST_PASSWORD = 'hitswint'
+# EMAIL_USE_TLS = True  # 与SMTP服务器通信时，是否启动TLS链接(安全链接)。默认是false
 # ACCOUNT_EMAIL_VERIFICATION = 'none'
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # 七牛配置
 # QINIU_ACCESS_KEY = ''
@@ -217,3 +210,8 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 # 网站标题等内容配置
 WEBSITE_TITLE = u'Swint\'s blog'
 WEBSITE_WELCOME = u'欢迎来到Vmaig'
+
+SITE_ID = 2
+
+MEDIA_URL = '/static/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'static/media/')

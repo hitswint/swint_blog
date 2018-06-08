@@ -1,24 +1,24 @@
 {% url 'category-detail-view' post.category.name as category_url %}
-{% url 'article-detail-view' post.en_title as article_url %}
+{% url 'article-detail-view' post.id as article_url %}
 
 <div class="all-post clearfix underline">
     <div class="post-title clearfix">
         <a href="{{category_url}}">
             <div class="pre-cat">
                 <div class="pre-catinner btn">
-                    {{post.category}} 
+                    {{post.category}}
                 </div>
                 <div class="pre-catarrow">
                 </div>
-            </div> 
+            </div>
         </a>
         <h1><a href="{{article_url}}">{{post.title}}</a></h1>
 
         <div class="post-tags" style="float:right">
             {% for tag in post.get_tags%}
-            <a href="{% url 'tag-detail-view' tag %}">
-                <span class="label label-vmaig-{{forloop.counter}} btn">{{tag}}</span>
-            </a>
+                <a href="{% url 'tag-detail-view' tag %}">
+                    <span class="label label-vmaig-{{forloop.counter}} btn">{{tag}}</span>
+                </a>
             {% endfor %}
         </div>
     </div>
@@ -29,16 +29,16 @@
                     <a href="{{article_url}}">
                         <img src="{{post.img}}"  height="400" alt="">
                     </a>
-                </figure> 
+                </figure>
             </div>
             <div class="col-sm-8">
                 <p>
-                {% autoescape off%}
-                {{post.summary|slice:"200" }}
-                {% endautoescape %}
-                {% if post.summary|length > 200 %}
-                    ...
-                {% endif %}
+                    {% autoescape off%}
+                        {{post.summary|slice:"200" }}
+                    {% endautoescape %}
+                    {% if post.summary|length > 200 %}
+                        ...
+                    {% endif %}
                 </p>
             </div>
         </div>

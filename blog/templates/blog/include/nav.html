@@ -39,7 +39,8 @@
 
                 <li class="nav-item nav-right">
                     {% if request.user.is_authenticated %}
-                        Hello {{ request.user.first_name }},
+                        {% load static %}
+                        <a href="{% url "dashboard" %}">{{ request.user.username }}<img src="{% get_media_prefix %}{{ user.profile.photo }}" alt="" width="20"></a>
                         <a href="{% url "logout" %}">Logout</a>
                     {% else %}
                         <a href="{% url "login" %}">Log-in</a>

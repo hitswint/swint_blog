@@ -3,6 +3,7 @@ from django.db import models
 from django.conf import settings
 
 
+# * string_with_title
 class string_with_title(str):
     """ 用来修改admin中显示的app名称,因为admin app 名称是用 str.title()显示的,
     所以修改str类的title方法就可以实现.
@@ -28,8 +29,10 @@ STATUS = {
 }
 
 
+# * Category
 class Category(models.Model):
-    name = models.CharField(default=u'未分类', unique=True, max_length=40, verbose_name=u'名称')
+    name = models.CharField(
+        default=u'未分类', unique=True, max_length=40, verbose_name=u'名称')
     parent = models.ForeignKey(
         'self', default=None, blank=True, null=True, verbose_name=u'上级分类')
     rank = models.IntegerField(default=0, verbose_name=u'排序')
@@ -56,6 +59,7 @@ class Category(models.Model):
     __str__ = __unicode__
 
 
+# * Article
 class Article(models.Model):
     author = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=u'作者')
     # category = models.ForeignKey(Category, verbose_name=u'分类')
@@ -68,7 +72,7 @@ class Article(models.Model):
         default=u'未分类',
         verbose_name=u'类别')
     title = models.CharField(max_length=100, verbose_name=u'标题')
-    en_title = models.CharField(max_length=100, verbose_name=u'英文标题')
+    subtitle = models.CharField(max_length=100, verbose_name=u'子标题')
     img = models.CharField(
         max_length=200, default='/static/img/article/default.jpg')
     tags = models.CharField(
@@ -76,7 +80,7 @@ class Article(models.Model):
         null=True,
         blank=True,
         verbose_name=u'标签',
-        help_text=u'用逗号分隔')
+        help_text=u'逗号分隔')
     summary = models.TextField(verbose_name=u'摘要')
     content = models.TextField(verbose_name=u'正文')
     view_times = models.IntegerField(default=0)
@@ -104,7 +108,7 @@ class Article(models.Model):
 
     def get_absolute_url(self):
         from django.core.urlresolvers import reverse
-        return reverse('article-detail-view', args=(self.en_title, ))
+        return reverse('article-detail-view', args=(self.id, ))
 
     def __unicode__(self):
         return self.title
@@ -112,60 +116,17 @@ class Article(models.Model):
     __str__ = __unicode__
 
 
-# class Column(models.Model):
-#     name = models.CharField(max_length=40, verbose_name=u'专栏内容')
-#     summary = models.TextField(verbose_name=u'专栏摘要')
-#     article = models.ManyToManyField(Article, verbose_name=u'文章')
-#     status = models.IntegerField(
-#         default=0, choices=STATUS.items(), verbose_name='状态')
-#     create_time = models.DateTimeField(u'创建时间', auto_now_add=True)
+def user_directory_path(instance, filename):
+    #pdb.set_trace()
+    return 'users/{0}/{1}'.format(instance.user.username, filename)
 
-#     class Meta:
-#         verbose_name_plural = verbose_name = u'专栏'
-#         ordering = ['-create_time']
-#         app_label = string_with_title('blog', u"博客管理")
 
-#     def get_absolute_url(self):
-#         from django.core.urlresolvers import reverse
-#         return reverse('column-detail-view', args=(self.name, ))
+# * Profile
+class Profile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL)
+    date_of_birth = models.DateField(blank=True, null=True)
+    # photo = models.ImageField(upload_to='users/%Y/%m/%d', blank=True)
+    photo = models.ImageField(upload_to=user_directory_path, blank=True)
 
-#     def __unicode__(self):
-#         return self.name
-
-#     __str__ = __unicode__
-
-# class Carousel(models.Model):
-#     title = models.CharField(max_length=100, verbose_name=u'标题')
-#     summary = models.TextField(blank=True, null=True, verbose_name=u'摘要')
-#     img = models.CharField(max_length=200, verbose_name=u'轮播图片',
-#                            default='/static/img/carousel/default.jpg')
-#     article = models.ForeignKey(Article, verbose_name=u'文章')
-#     create_time = models.DateTimeField(u'创建时间', auto_now_add=True)
-
-#     class Meta:
-#         verbose_name_plural = verbose_name = u'轮播'
-#         ordering = ['-create_time']
-#         app_label = string_with_title('blog', u"博客管理")
-
-# class News(models.Model):
-#     title = models.CharField(max_length=100, verbose_name=u'标题')
-#     summary = models.TextField(verbose_name=u'摘要')
-#     news_from = models.IntegerField(
-#         default=0, choices=NEWS.items(), verbose_name='来源')
-#     url = models.CharField(max_length=200, verbose_name=u'源地址')
-#     create_time = models.DateTimeField(u'创建时间', auto_now_add=True)
-#     pub_time = models.DateTimeField(default=False, verbose_name=u'发布时间')
-
-#     class Meta:
-#         verbose_name_plural = verbose_name = u'资讯'
-#         ordering = ['-title']
-#         app_label = string_with_title('blog', u"博客管理")
-
-#     def get_absolute_url(self):
-#         from django.core.urlresolvers import reverse
-#         return reverse('news-detail-view', args=(self.pk, ))
-
-#     def __unicode__(self):
-#         return self.title
-
-#     __str__ = __unicode__
+    def __str__(self):
+        return 'Profile for user {}'.format(self.user.username)

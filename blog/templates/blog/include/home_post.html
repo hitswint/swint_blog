@@ -1,5 +1,5 @@
 {% url 'category-detail-view' post.category.name as category_url %}
-{% url 'article-detail-view' post.en_title as article_url %}
+{% url 'article-detail-view' post.id as article_url %}
 
 <div class="home-post well clearfix">
     <div class="post-title underline clearfix">
@@ -30,14 +30,14 @@
             </span>
             <div class="post-tags">
                 {% for tag in post.get_tags%}
-                <a href="{% url 'tag-detail-view' tag%}" class="{%if forloop.counter0%}hidden-xs{%endif%} ">
-                    <span class="label label-vmaig-{{forloop.counter}} btn">{{tag}}</span>
-                </a>
+                    <a href="{% url 'tag-detail-view' tag%}" class="{%if forloop.counter0%}hidden-xs{%endif%} ">
+                        <span class="label label-vmaig-{{forloop.counter}} btn">{{tag}}</span>
+                    </a>
                 {% endfor %}
                 <a class="visible-xs-inline-block">
                     <span class="label label-vmaig-2 btn ">...</span>
                 </a>
- 
+
             </div>
 
         </div>
@@ -53,12 +53,12 @@
             </div>
             <div class="col-sm-8">
                 <p>
-                {% autoescape off%}
-                {{post.summary|slice:"200" }}
-                {% endautoescape %}
-                {% if post.summary|length > 200 %}
-                    ...
-                {% endif %}
+                    {% autoescape off%}
+                        {{post.summary|slice:"200" }}
+                    {% endautoescape %}
+                    {% if post.summary|length > 200 %}
+                        ...
+                    {% endif %}
                 </p>
                 <a type="button" class="btn btn-vmaig pull-right hidden-xs"  href="{{article_url}}">阅读全文</a>
 

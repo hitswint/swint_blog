@@ -62,7 +62,7 @@
     $('#vmaig-comment-form').submit(function(){
         $.ajax({
             type:"POST",
-            url:"/comment/{{article.en_title}}",
+            url:"/comment/{{article.id}}",
             data:{"comment":$("#comment").val()},
             beforeSend:function(xhr){
                 xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));  

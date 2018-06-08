@@ -7,3 +7,6 @@ tx_*.jpg
 *.swp
 *.un~
 /static/*
+/media/*
+/blog/tests_flymake.py
+/manage_flymake.py

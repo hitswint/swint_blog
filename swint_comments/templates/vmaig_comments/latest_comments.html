@@ -23,7 +23,7 @@
                     <a href="#">{{comment.user.username}} 评论:</a>
                 </div>
                 <div class="comment-content">
-                    <a href="{% url 'article-detail-view' comment.article.en_title%}">
+                    <a href="{% url 'article-detail-view' comment.article.id%}">
                         {% autoescape on%}
                         {{comment.text|slice:"30" }}
                         {% endautoescape %}

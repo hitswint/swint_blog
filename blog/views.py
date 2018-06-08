@@ -6,12 +6,14 @@ from django.shortcuts import render, render_to_response
 from django.template import Context, loader
 from django.views.generic import View, TemplateView, ListView, DetailView
 from django.db.models import Q
-from django.core.cache import caches
+from django.core.cache import cache
 from django.core.exceptions import PermissionDenied
 from django.contrib import auth
 from django.contrib.auth.forms import PasswordChangeForm, SetPasswordForm, UserCreationForm
 from django.contrib.auth.tokens import default_token_generator
-from blog.models import Article, Category
+from django.contrib.auth.decorators import login_required
+from blog.models import Article, Category, Profile
+from blog.forms import UserEditForm, ProfileEditForm
 from swint_comments.models import Comment
 from swint_system.models import Link
 from django.conf import settings
@@ -21,10 +23,10 @@ import json
 import logging
 
 # 缓存
-try:
-    cache = caches['memcache']
-except ImportError as e:
-    cache = caches['default']
+# try:
+#     cache = caches['memcache']
+# except ImportError as e:
+#     cache = caches['default']
 
 # logger
 logger = logging.getLogger(__name__)
@@ -71,6 +73,7 @@ class IndexView(BaseMixin, ListView):
     paginate_by = settings.PAGE_NUM  # 分页--每页的数目
 
     def get_context_data(self, **kwargs):
+        kwargs['bg_img'] = 'home-bg.jpg'
         kwargs['heading'] = 'swint blog'
         kwargs['subheading'] = 'welcome to my blog!'
         return super(IndexView, self).get_context_data(**kwargs)
@@ -95,7 +98,8 @@ class ArticleView(BaseMixin, DetailView):
             ip = request.META['HTTP_X_FORWARDED_FOR']
         else:
             ip = request.META['REMOTE_ADDR']
-            self.cur_user_ip = ip
+
+        self.cur_user_ip = ip
 
         article_id = self.kwargs.get('id')
         # 获取15*60s时间内访问过这篇文章的所有ip
@@ -120,13 +124,14 @@ class ArticleView(BaseMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         # 评论
-        article_id = self.kwargs.get('id', '')
-        kwargs['comment_list'] = \
-                                 self.queryset.get(id=article_id).comment_set.all()
+        # article_id = self.kwargs.get('id', '')
+        # kwargs['comment_list'] = \
+        #     self.queryset.get(id=article_id).comment_set.all()
+        kwargs['bg_img'] = 'post-bg.jpg'
         return super(ArticleView, self).get_context_data(**kwargs)
 
 
-# * AllView
+    # * AllView
 class AllView(BaseMixin, ListView):
     template_name = 'blog/all.html'
     context_object_name = 'article_list'
@@ -159,7 +164,7 @@ class AllView(BaseMixin, ListView):
 
         if val == "all":
             article_list = \
-                           Article.objects.filter(status=0).order_by(sort)[start:end+1]
+                Article.objects.filter(status=0).order_by(sort)[start:end+1]
         else:
             try:
                 article_list = Category.objects.get(
@@ -186,6 +191,8 @@ class AllView(BaseMixin, ListView):
             json.dumps(mydict), content_type="application/json")
 
 
+# * AboutView
+# * ContactView
 # * SearchView
 class SearchView(BaseMixin, ListView):
     template_name = 'blog/search.html'
@@ -216,7 +223,7 @@ class TagView(BaseMixin, ListView):
     def get_queryset(self):
         tag = self.kwargs.get('tag', '')
         article_list = \
-                       Article.objects.only('tags').filter(tags__icontains=tag, status=0)
+            Article.objects.only('tags').filter(tags__icontains=tag, status=0)
 
         return article_list
 
@@ -231,7 +238,7 @@ class CategoryView(BaseMixin, ListView):
         category = self.kwargs.get('category', '')
         try:
             article_list = \
-                           Category.objects.get(name=category).article_set.all()
+                Category.objects.get(name=category).article_set.all()
         except Category.DoesNotExist:
             logger.error(u'[CategoryView]此分类不存在:[%s]' % category)
             raise Http404
@@ -239,47 +246,7 @@ class CategoryView(BaseMixin, ListView):
         return article_list
 
 
-# * UserView
-# class UserView(BaseMixin, TemplateView):
-#     template_name = 'blog/user.html'
-
-#     def get(self, request, *args, **kwargs):
-
-#         if not request.user.is_authenticated():
-#             logger.error(u'[UserView]用户未登陆')
-#             return render(request, 'blog/login.html')
-
-#         slug = self.kwargs.get('slug')
-
-#         if slug == 'changetx':
-#             self.template_name = 'blog/user_changetx.html'
-#         elif slug == 'changepassword':
-#             self.template_name = 'blog/user_changepassword.html'
-#         elif slug == 'changeinfo':
-#             self.template_name = 'blog/user_changeinfo.html'
-#         elif slug == 'message':
-#             self.template_name = 'blog/user_message.html'
-#         elif slug == 'notification':
-#             self.template_name = 'blog/user_notification.html'
-
-#         return super(UserView, self).get(request, *args, **kwargs)
-
-#         logger.error(u'[UserView]不存在此接口')
-#         raise Http404
-
-#     def get_context_data(self, **kwargs):
-#         context = super(UserView, self).get_context_data(**kwargs)
-
-#         slug = self.kwargs.get('slug')
-
-#         if slug == 'notification':
-#             context[
-#                 'notifications'] = self.request.user.to_user_notification_set.order_by(
-#                     '-create_time').all()
-
-#         return context
-
-
+# * register
 def register(request):
     if request.method == 'POST':
         user_form = UserCreationForm(request.POST)
@@ -287,12 +254,40 @@ def register(request):
             # Create a new user object but avoid saving it yet
             new_user = user_form.save(commit=False)
             # Set the chosen password
-            new_user.set_password(user_form.cleaned_data['password'])
+            new_user.set_password(user_form.cleaned_data['password1'])
             # Save the User object
             new_user.save()
+            profile = Profile.objects.create(user=new_user)
             return render(request, 'registration/register_done.html',
                           {'new_user': new_user})
     else:
         user_form = UserCreationForm()
     return render(request, 'registration/register.html',
                   {'user_form': user_form})
+
+
+# * edit
+@login_required
+def edit(request):
+    if request.method == 'POST':
+        user_form = UserEditForm(instance=request.user, data=request.POST)
+        profile_form = ProfileEditForm(
+            instance=request.user.profile,
+            data=request.POST,
+            files=request.FILES)
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            return dashboard(request)
+    else:
+        user_form = UserEditForm(instance=request.user)
+        profile_form = ProfileEditForm(instance=request.user.profile)
+    return render(request, 'registration/edit.html',
+                  {'user_form': user_form,
+                   'profile_form': profile_form})
+
+
+# * dashboard
+@login_required
+def dashboard(request):
+    return render(request, 'registration/dashboard.html')

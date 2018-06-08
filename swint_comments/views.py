@@ -31,12 +31,12 @@ class CommentControl(View):
             )
             return HttpResponse(u"请登陆！", status=403)
 
-        en_title = self.kwargs.get('slug', '')
+        id = self.kwargs.get('slug', '')
         try:
-            # 默认使用pk来索引(也可根据需要使用title,en_title在索引
-            article = ArticleModel.objects.get(en_title=en_title)
+            # 默认使用pk来索引(也可根据需要使用title,id在索引
+            article = ArticleModel.objects.get(id=id)
         except ArticleModel.DoesNotExist:
-            logger.error(u'[CommentControl]此文章不存在:[%s]' % en_title)
+            logger.error(u'[CommentControl]此文章不存在:[%s]' % id)
             raise PermissionDenied
 
         # 保存评论
@@ -57,7 +57,7 @@ class CommentControl(View):
                     text=text,
                     from_user=user,
                     to_user=parent.user,
-                    url='/article/'+en_title+'.html'
+                    url='/article/'+id+'.html'
                 )
             except Comment.DoesNotExist:
                 logger.error(u'[CommentControl]评论引用错误:%s' % parent_str)
