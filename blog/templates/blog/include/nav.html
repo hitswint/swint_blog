@@ -37,15 +37,22 @@
                     <a class="nav-link" href="contact.html">Contact</a>
                 </li>
 
-                <li class="nav-item nav-right">
-                    {% if request.user.is_authenticated %}
-                        {% load static %}
+                {% if request.user.is_authenticated %}
+                    {% load static %}
+                    <li class="nav-item nav-right">
                         <a href="{% url "dashboard" %}">{{ request.user.username }}<img src="{% get_media_prefix %}{{ user.profile.photo }}" alt="" width="20"></a>
+                    </li>
+                    <li class="nav-item nav-right">
                         <a href="{% url "logout" %}">Logout</a>
-                    {% else %}
+                    </li>
+                {% else %}
+                    <li class="nav-item nav-right">
                         <a href="{% url "login" %}">Log-in</a>
+                    </li>
+                    <li class="nav-item nav-right">
                         <a href="{% url "register" %}">Register</a>
-                    {% endif %}
+                    </li>
+                {% endif %}
         </div>
     </div>
 </nav>
