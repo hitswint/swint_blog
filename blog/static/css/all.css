@@ -1,0 +1,65 @@
+.label-swint-1 {
+    background-color: #428bca;
+}
+
+.label-swint-2 {
+    background-color: #5cb85c;
+}
+
+.label-swint-3 {
+    background-color: #f0ad4e;
+}
+
+.label-swint-4 {
+    background-color: #5bc0de;
+}
+
+.label-swint-5 {
+    background-color: #d9534f;
+}
+
+.label-swint-6 {
+    background-color: #999;
+}
+
+.tags{
+    margin-top:5px;
+    background:#ddd;
+    padding-bottom:25px;
+}
+
+.tags label{
+    display: inline-block;
+    padding:1px 10px;
+    margin:0 3px 5px 0;
+    font-size:20px;
+    border-radius:2px;
+}
+
+.tags label:hover{
+    background: none repeat scroll 0% 0% #EEE;
+}
+
+.tags label.active:hover{
+    background:#D94600;
+}
+
+.tags .active{
+    background:#D94600;
+    color:#FFF;
+}
+
+.sort {
+    background:#ddd;
+    padding-bottom:15px;
+    font-size:20px
+}
+
+.sort label{
+    margin-right:10px;
+}
+
+.well {
+    background-color:#FFF;
+    box-shadow:0px 0px 20px #222;
+}

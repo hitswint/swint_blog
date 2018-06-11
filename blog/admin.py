@@ -18,14 +18,12 @@ class ArticleAdmin(admin.ModelAdmin):
                    'update_time', 'is_top')
     list_display = ('title', 'category', 'author', 'status', 'is_top',
                     'update_time')
-    fieldsets = ((u'基本信息', {
+    fieldsets = ((u'info', {
         'fields': ('title', 'subtitle', 'img', 'category', 'tags', 'author',
                    'is_top', 'rank', 'status')
-    }), (u'内容', {
+    }), (u'content', {
         'fields': ('content', )
-    }), (u'摘要', {
-        'fields': ('summary', )
-    }), (u'时间', {
+    }), (u'time', {
         'fields': ('pub_time', )
     }), )
 

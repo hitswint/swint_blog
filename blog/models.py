@@ -23,28 +23,28 @@ class string_with_title(str):
 
 # Create your models here.
 STATUS = {
-    0: u'正常',
-    1: u'草稿',
-    2: u'删除',
+    0: u'Normal',
+    1: u'Draft',
+    2: u'Deleted',
 }
 
 
 # * Category
 class Category(models.Model):
     name = models.CharField(
-        default=u'未分类', unique=True, max_length=40, verbose_name=u'名称')
+        default=u'unknown', unique=True, max_length=40, verbose_name=u'name')
     parent = models.ForeignKey(
-        'self', default=None, blank=True, null=True, verbose_name=u'上级分类')
-    rank = models.IntegerField(default=0, verbose_name=u'排序')
+        'self', default=None, blank=True, null=True, verbose_name=u'parent')
+    rank = models.IntegerField(default=0, verbose_name=u'rank')
     status = models.IntegerField(
-        default=0, choices=STATUS.items(), verbose_name=u'状态')
+        default=0, choices=STATUS.items(), verbose_name=u'status')
 
-    create_time = models.DateTimeField(u'创建时间', auto_now_add=True)
+    create_time = models.DateTimeField(u'create_time', auto_now_add=True)
 
     class Meta:
-        verbose_name_plural = verbose_name = u'分类'
+        verbose_name_plural = verbose_name = u'category'
         ordering = ['rank', '-create_time']
-        app_label = string_with_title('blog', u"博客管理")
+        app_label = string_with_title('blog', u"Blog Management")
 
     def get_absolute_url(self):
         from django.core.urlresolvers import reverse
@@ -61,7 +61,8 @@ class Category(models.Model):
 
 # * Article
 class Article(models.Model):
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=u'作者')
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL, verbose_name=u'author')
     # category = models.ForeignKey(Category, verbose_name=u'分类')
     # 引用外键Category，Category定义需在Article前面。
     category = models.ForeignKey(
@@ -69,32 +70,32 @@ class Article(models.Model):
         on_delete=models.SET_DEFAULT,
         to_field='name',
         # null=True,
-        default=u'未分类',
-        verbose_name=u'类别')
-    title = models.CharField(max_length=100, verbose_name=u'标题')
-    subtitle = models.CharField(max_length=100, verbose_name=u'子标题')
-    img = models.CharField(
-        max_length=200, default='/static/img/article/default.jpg')
+        default=u'unknown',
+        verbose_name=u'category')
+    title = models.CharField(max_length=100, verbose_name=u'title')
+    subtitle = models.CharField(max_length=100, verbose_name=u'subtitle')
+    img = models.CharField(max_length=200, default='/static/img/default.jpg')
     tags = models.CharField(
         max_length=200,
         null=True,
         blank=True,
-        verbose_name=u'标签',
-        help_text=u'逗号分隔')
-    summary = models.TextField(verbose_name=u'摘要')
-    content = models.TextField(verbose_name=u'正文')
+        verbose_name=u'tag',
+        help_text=u'seperated by comma')
+    content = models.TextField(verbose_name=u'content')
     view_times = models.IntegerField(default=0)
     zan_times = models.IntegerField(default=0)
 
-    is_top = models.BooleanField(default=False, verbose_name=u'置顶')
-    rank = models.IntegerField(default=0, verbose_name=u'排序')
+    is_top = models.BooleanField(default=False, verbose_name=u'is_top')
+    rank = models.IntegerField(default=0, verbose_name=u'rank')
     status = models.IntegerField(
-        default=0, choices=STATUS.items(), verbose_name='状态')
-    pub_time = models.DateTimeField(default=False, verbose_name=u'发布时间')
-    create_time = models.DateTimeField(u'创建时间', auto_now_add=True)
-    update_time = models.DateTimeField(u'更新时间', auto_now=True)
+        default=0, choices=STATUS.items(), verbose_name='status')
+    pub_time = models.DateTimeField(default=False, verbose_name=u'pub_time')
+    create_time = models.DateTimeField(u'create_time', auto_now_add=True)
+    update_time = models.DateTimeField(u'update_time', auto_now=True)
 
     def get_tags(self):
+        # 删除字符串中的空格并用逗号分割。
+        tags_without_space = ''.join([x for x in self.tags if x != " "])
         tags_list = self.tags.split(',')
         while '' in tags_list:
             tags_list.remove('')
@@ -102,9 +103,9 @@ class Article(models.Model):
         return tags_list
 
     class Meta:
-        verbose_name_plural = verbose_name = u'文章'
+        verbose_name_plural = verbose_name = u'article'
         ordering = ['rank', '-is_top', '-pub_time', '-create_time']
-        app_label = string_with_title('blog', u"博客管理")
+        app_label = string_with_title('blog', u"Blog Management")
 
     def get_absolute_url(self):
         from django.core.urlresolvers import reverse

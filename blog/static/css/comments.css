@@ -1,0 +1,41 @@
+.comment-list {
+    margin-top: 30px;
+}
+
+.comment-item:not(:last-child) {
+    border-bottom: 1px #ccc solid;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+}
+
+.comment-item:last-child {
+    border-bottom: 1px #ccc solid;
+    margin-bottom: 30px;
+    padding-bottom: 10px;
+}
+
+.comment-item .img {
+    float: left;
+}
+
+.comment-item .text {
+    padding-left: 60px;
+    word-break: break-all;
+}
+
+.comment-item .username .counter {
+    color: #999;
+    float: right;
+}
+
+
+.comment-item .username,
+.comment-item .submit-date {
+    color: #777;
+    font-size: 14px;
+}
+
+.comment-item .content {
+    padding-top: 5px;
+    font-size: 16px;
+}

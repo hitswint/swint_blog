@@ -14,7 +14,6 @@ from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.decorators import login_required
 from blog.models import Article, Category, Profile
 from blog.forms import UserEditForm, ProfileEditForm
-from swint_comments.models import Comment
 from swint_system.models import Link
 from django.conf import settings
 import datetime
@@ -43,23 +42,12 @@ class BaseMixin(object):
             # 热门文章
             context['hot_article_list'] = Article.objects.order_by(
                 "-view_times")[0:10]
-            # 导航条
-            # context['nav_list'] = Nav.objects.filter(status=0)
-            # 最新评论
-            context['latest_comment_list'] = Comment.objects.order_by(
-                "-create_time")[0:10]
             # 友情链接
             context['links'] = Link.objects.order_by('create_time').all()
             colors = ['primary', 'success', 'info', 'warning', 'danger']
             for index, link in enumerate(context['links']):
                 link.color = colors[index % len(colors)]
 
-            # 用户未读消息数
-            # user = self.request.user
-            # if user.is_authenticated():
-            #     context[
-            #         'notification_count'] = user.to_user_notification_set.filter(
-            #             is_read=0).count()
         except Exception as e:
             logger.error(u'[BaseMixin]加载基本信息出错')
 
@@ -74,8 +62,8 @@ class IndexView(BaseMixin, ListView):
 
     def get_context_data(self, **kwargs):
         kwargs['bg_img'] = 'home-bg.jpg'
-        kwargs['heading'] = 'swint blog'
-        kwargs['subheading'] = 'welcome to my blog!'
+        kwargs['heading'] = 'Swint \'s blog'
+        kwargs['subheading'] = settings.WEBSITE_WELCOME
         return super(IndexView, self).get_context_data(**kwargs)
 
     def get_queryset(self):
@@ -123,15 +111,11 @@ class ArticleView(BaseMixin, DetailView):
         return super(ArticleView, self).get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        # 评论
-        # article_id = self.kwargs.get('id', '')
-        # kwargs['comment_list'] = \
-        #     self.queryset.get(id=article_id).comment_set.all()
         kwargs['bg_img'] = 'post-bg.jpg'
         return super(ArticleView, self).get_context_data(**kwargs)
 
 
-    # * AllView
+# * AllView
 class AllView(BaseMixin, ListView):
     template_name = 'blog/all.html'
     context_object_name = 'article_list'
@@ -181,18 +165,20 @@ class AllView(BaseMixin, ListView):
         html = ""
         for article in article_list:
             html += template.loader.get_template(
-                'blog/include/all_post.html').render(
-                    template.Context({
-                        'post': article
-                    }))
+                'blog/include/all_post.html').render({
+                    'post': article
+                })
 
         mydict = {"html": html, "isend": isend}
         return HttpResponse(
             json.dumps(mydict), content_type="application/json")
 
 
-# * AboutView
-# * ContactView
+# * about
+def about(request):
+    return render(request, 'blog/about.html', {'bg_img': "about-bg.jpg"})
+
+
 # * SearchView
 class SearchView(BaseMixin, ListView):
     template_name = 'blog/search.html'
@@ -207,10 +193,11 @@ class SearchView(BaseMixin, ListView):
         # 获取搜索的关键字
         s = self.request.GET.get('s', '')
         # 在文章的标题,summary和tags中搜索关键字
-        article_list = Article.objects.only('title', 'summary', 'tags').filter(
-            Q(title__icontains=s) | Q(summary__icontains=s) |
-            Q(tags__icontains=s),
-            status=0)
+        article_list = Article.objects.only(
+            'title', 'subtitle', 'tags').filter(
+                Q(title__icontains=s) | Q(subtitle__icontains=s) |
+                Q(tags__icontains=s),
+                status=0)
         return article_list
 
 
@@ -226,6 +213,10 @@ class TagView(BaseMixin, ListView):
             Article.objects.only('tags').filter(tags__icontains=tag, status=0)
 
         return article_list
+
+    def get_context_data(self, **kwargs):
+        kwargs['tag'] = self.kwargs.get('tag', '')
+        return super(TagView, self).get_context_data(**kwargs)
 
 
 # * CategoryView
@@ -244,6 +235,10 @@ class CategoryView(BaseMixin, ListView):
             raise Http404
 
         return article_list
+
+    def get_context_data(self, **kwargs):
+        kwargs['category'] = self.kwargs.get('category', '')
+        return super(CategoryView, self).get_context_data(**kwargs)
 
 
 # * register

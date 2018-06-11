@@ -1,22 +1,55 @@
 {% extends "blog/base.html"%}
 
-{% block main%}
-    <div class="row">
-        <div id="vmaig-content" class="col-md-8 col-lg-9">
-            <div id="all-post-list" class="well">
-                {% if article_list %}
-                    {% with post_list=article_list %}
-                        {% for post in post_list %}
-                            {% include "blog/include/category_post.html"%}
-                        {% endfor %}
-                    {% endwith %}
-                {% endif %}
-            </div>
+{%block main_heading%}
+    <h2>Category: {{category}}</h2>
+{% endblock %}
 
-            <!--分页 -->
-            {% if page_obj%}
-                {% include "blog/include/pagination.html"%}
-            {% endif %}
-        </div>
-    </div>
+{% block main%}
+    {% load comments %}
+    {% if article_list %}
+        {% with post_list=article_list %}
+            {% for post in post_list %}
+                {% url 'article-detail-view' post.id as article_url %}
+                <div class="post-preview">
+                    <a href="{{article_url}}">
+                        <h2 class="post-title">
+                            {{post.title}}
+                        </h2>
+
+                        <h3 class="post-subtitle">
+                            {{post.subtitle}}
+                        </h3>
+                    </a>
+
+                    <p class="post-meta">
+                        Posted by
+                        <a href="#">{{post.author}}</a>
+                        on {{post.pub_time|date:"Y-m-d" }}
+                        <span>
+                            <img src="/static/svg/eye.svg" alt="eye">
+                            {{post.view_times}}
+                        </span>
+                        <span>
+                            <img src="/static/svg/comment.svg" alt="comment">
+                            {% get_comment_count for post as comment_count %}
+                            {{ comment_count }}
+                        </span>
+                        <span>
+                            {% autoescape off%}
+                                {{post.content|slice:"10" }}
+                            {% endautoescape %}
+                            {% if post.content|length > 10 %}
+                                ...
+                            {% endif %}
+                        </span>
+                    </p>
+                </div>
+            {% endfor %}
+        {% endwith %}
+    {% endif %}
+
+    <!--分页 -->
+    {% if page_obj%}
+        {% include "blog/include/pagination.html"%}
+    {% endif %}
 {% endblock %}

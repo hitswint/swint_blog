@@ -29,22 +29,33 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'p1p2e^77+6ex*1@-s6hzcx7l3bx#g2q0w1za1c-x-1p@n6z^x*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = False
-DEBUG = True
+DEBUG = False
+# DEBUG = True
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost ',
-    '67.209.178.147',
     '.guiq.wang',
 ]
 
 # Application definition
 
-INSTALLED_APPS = ('django.contrib.admin', 'django.contrib.auth',
-                  'django.contrib.contenttypes', 'django.contrib.sessions',
-                  'django.contrib.messages', 'django.contrib.staticfiles',
-                  'django.contrib.sitemaps', 'django.contrib.sites', 'blog',
-                  'swint_comments', 'swint_system', 'gunicorn', 'bootstrap3', )
+INSTALLED_APPS = (
+    # 需collectstatic在/static下生成admin/bootstrap_admin。
+    'bootstrap_admin',  # always before django.contrib.admin
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'django.contrib.sitemaps',
+    'django.contrib.sites',
+    'blog',
+    'swint_system',
+    'gunicorn',
+    'bootstrap3',
+    'django_comments',
+    'initial_avatars', )
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -208,10 +219,10 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # QINIU_URL = ''
 
 # 网站标题等内容配置
-WEBSITE_TITLE = u'Swint\'s blog'
-WEBSITE_WELCOME = u'欢迎来到Vmaig'
+WEBSITE_TITLE = u'晴耕雨读_swint'
+WEBSITE_WELCOME = u'Welcome!'
 
 SITE_ID = 2
 
-MEDIA_URL = '/static/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'static/media/')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')

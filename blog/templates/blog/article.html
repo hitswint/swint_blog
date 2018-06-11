@@ -8,20 +8,97 @@
         <a href="#">{{article.author}}</a>
         {{article.pub_time|date:"Y-m-d"}}
     </span>
-    <a href="{{category_url}}">{{article.category}}</a>
-    <div class="article-tags">
-        {% for tag in article.get_tags%}
-            <a href="{% url 'tag-detail-view' tag %}">
-                <span class="label">{{tag}}</span>
-            </a>
-        {% endfor %}
-    </div>
+
+    <a href="{{category_url}}">
+        <span class="badge badge-light">
+            <img src="/static/svg/database.svg" alt="database">
+            {{article.category}}
+        </span>
+    </a>
+    {% for tag in article.get_tags %}
+        <a href="{% url 'tag-detail-view' tag %}">
+            <span class="badge badge-secondary">
+                <img src="/static/svg/tag.svg" alt="tag">
+                {{tag}}
+            </span>
+        </a>
+    {% endfor %}
 {% endblock %}
 
 
 <!-- Main Content -->
 {%block main%}
+    <!-- 支持markdown显示。 -->
+    {% load custom_markdown %}
     <article>
-        {{article.content}}
+        {{article.content|custom_markdown}}
     </article>
+    {% load comments %}
+
+    {% get_comment_count for article as comment_count %}
+
+    {#% render_comment_list for article %#}
+    {#% render_comment_form for article %#}
+
+    {% get_comment_list for article as comment_list %}
+
+    {{ comment_count }} Comments.
+
+    <div class="comment-list">
+        {% load static %}
+        {% for comment in comment_list%}
+            <!-- ({{ forloop.counter }}) -->
+            <div class="comment-item">
+                <div class="img">
+                    {% if comment.user.profile.photo %}
+                        <img src="{% get_media_prefix %}{{ comment.user.profile.photo }}" alt="" width="50">
+                    {%else%}
+                        {% load initialavatar %}
+                        {% get_initial_avatar comment.user 50 %}
+                    {%endif%}
+                </div>
+                <div class="text">
+                    <div class="username">
+                        <a href="#">{{comment.user_name}}</a>
+                        <span class="counter">[{{ forloop.counter }}]</span>
+                    </div>
+                    <div class="content">
+                        {{ comment.comment }}
+                    </div>
+                    <span class="submit-date">{{ comment.submit_date | date:"H:i Y/m/d"}}</span>
+                </div>
+            </div>
+        {% endfor%}
+    </div>
+
+    {% if user.is_authenticated %}
+        {% load bootstrap3 %}
+        {% get_comment_form for article as form %}
+        <form action="{% comment_form_target %}" method="POST">
+            {% csrf_token %}
+            {#{ form }#}
+            {% bootstrap_field form.comment %}
+            {{ form.honeypot }}
+            {{ form.content_type }}
+            {{ form.object_pk }}
+            {{ form.timestamp }}
+            {{ form.security_hash }}
+            <input type="hidden" name="next" value="{% url 'article-detail-view' article.id %}" />
+            <div>
+                <button type="submit" class="btn btn-primary" id="id_submit">
+                    {% bootstrap_icon "star" %} Add comment
+                </button>
+            </div>
+        </form>
+    {% else %}
+        <p>Please <a href="{% url 'login' %}">log in</a> to leave a comment.</p>
+    {% endif %}
+
 {% endblock %}
+
+{% block css%}
+    <!-- 隐藏comment form中honeypot输入框。 -->
+    <style>
+     #id_honeypot {display: none;}
+    </style>
+{% endblock%}

@@ -1,7 +1,10 @@
 from django.conf.urls import include, url
+from django.conf.urls.static import static
+from django.conf import settings
 from django.contrib.sitemaps.views import sitemap
 from django.contrib.sitemaps import GenericSitemap, Sitemap
 from django.core.urlresolvers import reverse
+from django.views.static import serve
 
 from django.contrib import admin
 
@@ -48,19 +51,20 @@ sitemaps = {
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'', include('blog.urls')),
-    # url(r'', include('swint_comments.urls')),
+    url(r'^comments/', include('django_comments.urls')),
+    url(r'^avatar/', include('initial_avatars.urls')),
     url(r'^sitemap\.xml$',
         sitemap, {'sitemaps': sitemaps},
         name='django.contrib.sitemaps.views.sitemap')
 ]
 
-# 在Debug = False的非调试模式下，静态文件不会自动加载，而是交给apache/nginx来处理。
+# DEBUG = True时，将/media下文件当作静态文件处理。
+# urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# Debug = False时，静态文件不会自动加载，而是交给apache/nginx来处理。
 # 设置在非调试模式下同样加载静态文件。
-# from django.conf import settings
-# from django.views.static import serve
-# if settings.DEBUG is False:
-#     urlpatterns += [
-#         url(r'^static/(?P<path>.*)$', serve, {
-#             'document_root': settings.STATIC_ROOT,
-#         }),
-#     ]
+if settings.DEBUG is False:
+    urlpatterns += [
+        url(r'^media/(?P<path>.*)$', serve, {
+            'document_root': settings.MEDIA_ROOT,
+        }),
+    ]

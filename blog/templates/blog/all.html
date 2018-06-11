@@ -1,64 +1,56 @@
 {% extends "blog/base.html" %}
 
+{%block main_heading%}
+    <h2>Archives</h2>
+{% endblock %}
+
 {% block main%}
-    <div class="row">
-        <div id="vmaig-content" class="col-md-8 col-lg-9">
-            <div id="tool" class="well clearfix">
-                <div class="tags">
-                    <div class="tag-list" style="float:left">
-                        <label class="active">
-                            全部
-                            <input type="radio" name="category" value="all" style="display:none"></input>
-                        </label>
-                        {% for category in category_list%}
-                            <label>
-                                {{category.name}}
-                                <input type="radio" name="category" value="{{category.name}}" style="display:none"></input>
-                            </label>
-                        {% endfor%}
-                    </div>
-                </div>
-            </div>
-
-            <div class="well">
-                <div class="sort">
-                    <label>
-                        <input type="radio" name="sort" value="time" checked="checked"> 按时间排序
-                    </label>
-                    <label>
-                        <input type="radio" name="sort" value="recommend"> 按热度排序
-                    </label>
-                    <label>
-                        <input type="radio" name="sort" value="comment"> 按评论排序
-                    </label>
-                </div>
-
-                <div id="all-post-list">
-                    {% if article_list %}
-                        {% with post_list=article_list %}
-                            {% for post in post_list %}
-                                {% include "blog/include/all_post.html"%}
-                            {% endfor %}
-                        {% endwith %}
-                    {% endif %}
-                </div>
-                <!-- <div id="loading" style="height:100px;line-height:100px;text-align:center;display:none;"> -->
-                <!-- <img src="http://vmaig.qiniudn.com/loading.gif" alt=""> -->
-                <!-- </div> -->
-
-
-            </div>
-            <button id="all-post-more" type="button" class="btn btn-vmaig" value="all" style="width:100%">
-                加载更多
-                <span class="glyphicon glyphicon-menu-down"></span>
-            </button>
-
-        </div>
+    <div class="tags">
+        <label class="active">
+            All
+            <input type="radio" name="category" value="all" style="display:none"></input>
+        </label>
+        {% for category in category_list%}
+            <label>
+                {{category.name}}
+                <input type="radio" name="category" value="{{category.name}}" style="display:none"></input>
+            </label>
+        {% endfor%}
     </div>
+
+    <div class="sort">
+        <label>
+            <input type="radio" name="sort" value="time" checked="checked"> 按时间排序
+        </label>
+        <label>
+            <input type="radio" name="sort" value="recommend"> 按热度排序
+        </label>
+        <label>
+            <input type="radio" name="sort" value="comment"> 按评论排序
+        </label>
+    </div>
+    <div id="all-post-list">
+        {% if article_list %}
+            {% with post_list=article_list %}
+                {% for post in post_list %}
+                    {% include "blog/include/all_post.html"%}
+                {% endfor %}
+            {% endwith %}
+        {% endif %}
+    </div>
+
+    <div id="loading" style="height:100px;line-height:100px;text-align:center;display:none;">
+        <img src="/static/gif/loading.gif" alt="" width="50">
+    </div>
+
+    <button id="all-post-more" type="button" class="btn btn-default" value="all" style="width:100%">
+        MORE
+    </button>
 
 {% endblock %}
 
 {% block js%}
+
     <script language="javascript" type="text/javascript">
 
      var start = 0;
@@ -77,10 +69,10 @@
          $.ajax({
              type:"POST",
              url:"/all/",
-             data:{"val":$(this).attr("value"),"sort":$("input[name='sort']:checked").val(),"start":start,"end":end},
-             beforeSend:function(xhr){
-                 xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));
-             },
+             data:{"val":$(this).attr("value"),"sort":$("input[name='sort']:checked").val(),"start":start,"end":end, "csrfmiddlewaretoken":'{{csrf_token}}'},
+             /* beforeSend:function(xhr){
+              *     xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));
+              * }, */
              success:function(data,textStatus){
                  $("#loading")[0].style.display = "none";
                  $('#all-post-list').append(data["html"]);
@@ -105,14 +97,21 @@
          $("#loading")[0].style.display = "block";
 
          $("#all-post-list").empty();
+
+         /* ajax发送post请求时，需通过csrftoken验证 */
+         /* 可以使用以下ajaxSetup函数或在请求数据中加入csrfmiddlewaretoken数据。 */
+         /* $.ajaxSetup({ */
+         /* data:{csrfmiddlewaretoken:'{{ csrf_token }}'}, */
+         /* }); */
+
          $.ajax({
-             type:"POST",
-             url:"/all/",
-             data:{"val":$("label.active input").val(),"sort":$("input[name='sort']:checked").val(),"start":start,"end":end},
-             beforeSend:function(xhr){
-                 xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));
-             },
-             success:function(data,textStatus){
+             type: 'POST',
+             url: "{% url 'all-view' %}",
+             data: {"val":$("label.active input").val(),"sort":$("input[name='sort']:checked").val(),"start":start,"end":end, "csrfmiddlewaretoken":'{{csrf_token}}'},
+             /* beforeSend: function(xhr){
+              *     xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));
+              * }, */
+             success: function(data,textStatus){
                  $("#loading")[0].style.display = "none";
                  $('#all-post-list').append(data["html"]);
                  if(data["isend"])
@@ -122,14 +121,11 @@
                          $("#all-post-more")[0].style.display = "block";
                      }
              },
-             error:function(XMLHttpRequest, textStatus, errorThrown){
+             error: function(XMLHttpRequest, textStatus, errorThrown){
                  alert(XMLHttpRequest.responseText);
              }
          });
-
      });
-
-
 
      $("#all-post-more").click(function(){
          start = end;
@@ -138,10 +134,10 @@
          $.ajax({
              type:"POST",
              url:"/all/",
-             data:{"val":$(this).attr("value"),"sort":$("input[name='sort']:checked").val(),"start":start,"end":end},
-             beforeSend:function(xhr){
-                 xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));
-             },
+             data:{"val":$(this).attr("value"),"sort":$("input[name='sort']:checked").val(),"start":start,"end":end, "csrfmiddlewaretoken":'{{csrf_token}}'},
+             /* beforeSend:function(xhr){
+              *     xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));
+              * }, */
              success:function(data,textStatus){
                  $("#loading")[0].style.display = "none";
                  $("#all-post-more")[0].style.display = "none";
@@ -162,4 +158,4 @@
      });
 
     </script>
-{% endblock%}
+{% endblock %}
