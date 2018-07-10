@@ -24,7 +24,7 @@
                 {% if request.user.is_authenticated %}
                     {% load static %}
                     <li class="nav-item nav-right">
-                        <a href="{% url "dashboard" %}">{{ request.user.username }}
+                        <a href="{%ifequal request.user.username "swint" %}/admin{%else%}{% url "dashboard" %}{%endifequal%}">{{ request.user.username }}
                             {% if user.profile.photo %}
                                 <img src="{% get_media_prefix %}{{ user.profile.photo }}" alt="" width="20">
                             {%else%}

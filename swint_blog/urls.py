@@ -53,13 +53,18 @@ urlpatterns = [
     url(r'', include('blog.urls')),
     url(r'^comments/', include('django_comments.urls')),
     url(r'^avatar/', include('initial_avatars.urls')),
+    url(r'^summernote/', include('django_summernote.urls')),
+    url(r'^markdownx/', include('markdownx.urls')),
     url(r'^sitemap\.xml$',
         sitemap, {'sitemaps': sitemaps},
         name='django.contrib.sitemaps.views.sitemap')
 ]
 
 # DEBUG = True时，将/media下文件当作静态文件处理。
-# urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+if settings.DEBUG:
+    urlpatterns += static(
+        settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 # Debug = False时，静态文件不会自动加载，而是交给apache/nginx来处理。
 # 设置在非调试模式下同样加载静态文件。
 if settings.DEBUG is False:

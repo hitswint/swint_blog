@@ -55,7 +55,12 @@ INSTALLED_APPS = (
     'gunicorn',
     'bootstrap3',
     'django_comments',
-    'initial_avatars', )
+    'django_comments_customized',
+    'initial_avatars',
+    'django_summernote',
+    'markdownx', )
+
+COMMENTS_APP = 'django_comments_customized'
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -226,3 +231,11 @@ SITE_ID = 2
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+SUMMERNOTE_CONFIG = {
+    'iframe': True,
+    'summernote': {
+        'width': '100%',
+        'height': '240',
+    },
+}

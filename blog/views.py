@@ -13,7 +13,7 @@ from django.contrib.auth.forms import PasswordChangeForm, SetPasswordForm, UserC
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.decorators import login_required
 from blog.models import Article, Category, Profile
-from blog.forms import UserEditForm, ProfileEditForm
+from blog.forms import UserCreationFormCustomized, UserEditForm, ProfileEditForm
 from swint_system.models import Link
 from django.conf import settings
 import datetime
@@ -244,7 +244,7 @@ class CategoryView(BaseMixin, ListView):
 # * register
 def register(request):
     if request.method == 'POST':
-        user_form = UserCreationForm(request.POST)
+        user_form = UserCreationFormCustomized(request.POST)
         if user_form.is_valid():
             # Create a new user object but avoid saving it yet
             new_user = user_form.save(commit=False)
@@ -256,7 +256,7 @@ def register(request):
             return render(request, 'registration/register_done.html',
                           {'new_user': new_user})
     else:
-        user_form = UserCreationForm()
+        user_form = UserCreationFormCustomized()
     return render(request, 'registration/register.html',
                   {'user_form': user_form})
 

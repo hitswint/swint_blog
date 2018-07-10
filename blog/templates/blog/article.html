@@ -62,9 +62,12 @@
                         <a href="#">{{comment.user_name}}</a>
                         <span class="counter">[{{ forloop.counter }}]</span>
                     </div>
-                    <div class="content">
-                        {{ comment.comment }}
-                    </div>
+                    <!-- 使用summernote生成的内容不自动转义，否则显示带有html标签，如<p></p>。 -->
+                    {% autoescape off %}
+                        <div class="content">
+                            {{ comment.comment }}
+                        </div>
+                    {% endautoescape %}
                     <span class="submit-date">{{ comment.submit_date | date:"H:i Y/m/d"}}</span>
                 </div>
             </div>
@@ -77,7 +80,8 @@
         <form action="{% comment_form_target %}" method="POST">
             {% csrf_token %}
             {#{ form }#}
-            {% bootstrap_field form.comment %}
+            {#% bootstrap_field form.comment %#}
+            {{ form.comment }}
             {{ form.honeypot }}
             {{ form.content_type }}
             {{ form.object_pk }}

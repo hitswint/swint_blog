@@ -3,7 +3,9 @@ Django==1.11.2
 django-bootstrap3==10.0.1
 django-contrib-comments==1.8.0
 django-initial-avatars==0.9.1
+django-markdownx==2.0.23
 django-smtp-ssl==1.0
+django-summernote==0.8.8.7
 gunicorn==19.8.1
 Markdown==2.6.11
 Pillow==5.1.0

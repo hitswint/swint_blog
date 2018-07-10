@@ -10,3 +10,4 @@ tx_*.jpg
 /media/*
 *_flymake.py
 __init__.py
+!/django_comments_customized/__init__.py

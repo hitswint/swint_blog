@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db import models
 from django.conf import settings
+from markdownx.models import MarkdownxField
 
 
 # * string_with_title
@@ -62,7 +63,7 @@ class Category(models.Model):
 # * Article
 class Article(models.Model):
     author = models.ForeignKey(
-        settings.AUTH_USER_MODEL, verbose_name=u'author')
+        settings.AUTH_USER_MODEL, default=1, verbose_name=u'author')
     # category = models.ForeignKey(Category, verbose_name=u'分类')
     # 引用外键Category，Category定义需在Article前面。
     category = models.ForeignKey(
@@ -82,6 +83,7 @@ class Article(models.Model):
         verbose_name=u'tag',
         help_text=u'seperated by comma')
     content = models.TextField(verbose_name=u'content')
+    # content = MarkdownxField()
     view_times = models.IntegerField(default=0)
     zan_times = models.IntegerField(default=0)
 
