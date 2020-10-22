@@ -3,7 +3,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib.sitemaps.views import sitemap
 from django.contrib.sitemaps import GenericSitemap, Sitemap
-from django.core.urlresolvers import reverse
+from django.urls import reverse, path, re_path
 from django.views.static import serve
 
 from django.contrib import admin
@@ -49,13 +49,13 @@ sitemaps = {
 }
 
 urlpatterns = [
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'', include('blog.urls')),
-    url(r'^comments/', include('django_comments.urls')),
-    url(r'^avatar/', include('initial_avatars.urls')),
-    url(r'^summernote/', include('django_summernote.urls')),
-    url(r'^markdownx/', include('markdownx.urls')),
-    url(r'^sitemap\.xml$',
+    path('admin/', admin.site.urls),
+    re_path(r'', include('blog.urls')),
+    re_path(r'^comments/', include('django_comments.urls')),
+    re_path(r'^avatar/', include('initial_avatars.urls')),
+    re_path(r'^summernote/', include('django_summernote.urls')),
+    re_path(r'^markdownx/', include('markdownx.urls')),
+    re_path(r'^sitemap\.xml$',
         sitemap, {'sitemaps': sitemaps},
         name='django.contrib.sitemaps.views.sitemap')
 ]
@@ -69,7 +69,7 @@ if settings.DEBUG:
 # 设置在非调试模式下同样加载静态文件。
 if settings.DEBUG is False:
     urlpatterns += [
-        url(r'^media/(?P<path>.*)$', serve, {
+        re_path(r'^media/(?P<path>.*)$', serve, {
             'document_root': settings.MEDIA_ROOT,
         }),
     ]

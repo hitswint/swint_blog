@@ -35,7 +35,7 @@ class Category(models.Model):
     name = models.CharField(
         default=u'unknown', unique=True, max_length=40, verbose_name=u'name')
     parent = models.ForeignKey(
-        'self', default=None, blank=True, null=True, verbose_name=u'parent')
+        'self', default=None, blank=True, null=True, verbose_name=u'parent', on_delete=models.CASCADE)
     rank = models.IntegerField(default=0, verbose_name=u'rank')
     status = models.IntegerField(
         default=0, choices=STATUS.items(), verbose_name=u'status')
@@ -63,12 +63,12 @@ class Category(models.Model):
 # * Article
 class Article(models.Model):
     author = models.ForeignKey(
-        settings.AUTH_USER_MODEL, default=1, verbose_name=u'author')
+        settings.AUTH_USER_MODEL, default=1, verbose_name=u'author', on_delete=models.CASCADE)
     # category = models.ForeignKey(Category, verbose_name=u'分类')
     # 引用外键Category，Category定义需在Article前面。
     category = models.ForeignKey(
         'Category',
-        on_delete=models.SET_DEFAULT,
+        on_delete=models.CASCADE,
         to_field='name',
         # null=True,
         default=u'unknown',
@@ -126,7 +126,7 @@ def user_directory_path(instance, filename):
 
 # * Profile
 class Profile(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     date_of_birth = models.DateField(blank=True, null=True)
     # photo = models.ImageField(upload_to='users/%Y/%m/%d', blank=True)
     photo = models.ImageField(upload_to=user_directory_path, blank=True)

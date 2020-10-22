@@ -2,7 +2,7 @@
 from django import template
 from django import forms
 from django.http import HttpResponse, Http404
-from django.shortcuts import render, render_to_response
+from django.shortcuts import render
 from django.template import Context, loader
 from django.views.generic import View, TemplateView, ListView, DetailView
 from django.db.models import Q

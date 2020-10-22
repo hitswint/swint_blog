@@ -18,10 +18,12 @@ class Notification(models.Model):
         blank=True,
         null=True,
         related_name='from_user_notification_set',
+        on_delete=models.CASCADE,
         verbose_name=u'from_user')
     to_user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name='to_user_notification_set',
+        on_delete=models.CASCADE,
         verbose_name=u'to_user')
     type = models.CharField(
         max_length=20, verbose_name=u'type', null=True, blank=True)
