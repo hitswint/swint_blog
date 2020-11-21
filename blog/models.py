@@ -48,8 +48,8 @@ class Category(models.Model):
         app_label = string_with_title('blog', u"Blog Management")
 
     def get_absolute_url(self):
-        from django.core.urlresolvers import reverse
-        return reverse('category-detail-view', args=(self.name, ))
+        from django.urls import reverse_lazy
+        return reverse_lazy('category-detail-view', args=(self.name, ))
 
     def __unicode__(self):
         if self.parent:
@@ -110,8 +110,8 @@ class Article(models.Model):
         app_label = string_with_title('blog', u"Blog Management")
 
     def get_absolute_url(self):
-        from django.core.urlresolvers import reverse
-        return reverse('article-detail-view', args=(self.id, ))
+        from django.urls import reverse_lazy
+        return reverse_lazy('article-detail-view', args=(self.id, ))
 
     def __unicode__(self):
         return self.title
